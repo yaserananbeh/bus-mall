@@ -1,0 +1,17 @@
+body{
+    width: 70%;
+    margin:auto;
+    background-color: rgb(180, 50, 50);
+    color: white;
+    text-align: center;
+}
+.imageContainer{
+    overflow: hidden;
+}
+#firstImage,#secondImage,#thirdImage{
+    width: 300px;
+    height: 300px;
+    margin: 25px;
+    float: left;
+    background-color: rebeccapurple;
+}
