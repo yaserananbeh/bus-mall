@@ -1,5 +1,5 @@
 'use strict';
-const rounds=5;
+const rounds=25;
 let clickTimes=0;
 let firtProductIndex;
 let secondProductIndex;
