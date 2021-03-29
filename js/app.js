@@ -1,6 +1,9 @@
 'use strict';
 const rounds=25;
 let clickTimes=0;
+let previousIteration=[];
+let votes=[];
+let views=[];
 let firtProductIndex;
 let secondProductIndex;
 let thirdProductIndex;
@@ -21,10 +24,9 @@ const imageNames=['bag','banana','bathroom','boots','bubblegum','chair','cthulhu
 function Products(name){
   this.name=name,
   this.path=`./img/${name}.jpg`,
-  this.votes=0;
-  this.show=0;
+  this.votes=0,
+  this.show=0,
   Products.all.push(this);
-
 }
 Products.all=[];
 
@@ -35,36 +37,37 @@ for (let i = 0; i < imageNames.length; i++) {
 
 // console.log(randomNumber(0,imageNames.length));
 function render(){
+  // previousIteration=[];
   firtProductIndex=randomNumber(0,imageNames.length-1);
+  previousIteration[0]=(firtProductIndex);
   firtProduct.src=Products.all[firtProductIndex].path;
   firtProduct.alt=Products.all[firtProductIndex].name;
   firtProduct.title=Products.all[firtProductIndex].name;
   Products.all[firtProductIndex].show+=1;
-  // console.log(firtProduct);
-  // console.log(firtProductIndex);
+  /*---------------*/
   secondProductIndex=randomNumber(0,imageNames.length-1);
   while(secondProductIndex === firtProductIndex){
     secondProductIndex=randomNumber(0,imageNames.length-1);
-
   }
+  previousIteration[1]=(secondProductIndex);
   secondProduct.src=Products.all[secondProductIndex].path;
   secondProduct.alt=Products.all[secondProductIndex].name;
   secondProduct.title=Products.all[secondProductIndex].name;
   Products.all[secondProductIndex].show+=1;
-  // console.log(secondProductIndex);
-
-
+  // ---------------------------------
   thirdProductIndex=randomNumber(0,imageNames.length-1);
   while(thirdProductIndex === firtProductIndex || thirdProductIndex===secondProductIndex ){
     thirdProductIndex=randomNumber(0,imageNames.length-1);
   }
+  previousIteration[2]=(thirdProductIndex);
   thirdProduct.src=Products.all[thirdProductIndex].path;
   thirdProduct.alt=Products.all[thirdProductIndex].name;
   thirdProduct.title=Products.all[thirdProductIndex].name;
   Products.all[thirdProductIndex].show+=1;
-  // console.log(thirdProductIndex);
+  // -------------------------------
 }
 render();
+// console.log(previousIteration);
 
 imageContainer.addEventListener('click',handleClick);
 
@@ -88,14 +91,9 @@ function handleClick(event){
         Products.all[thirdProductIndex].votes=+1;
         clickTimes++;
       }
-    // else{
-    //   console.log('out of the range');
-    // }
+      // console.log(previousIteration);
+      render();
     }
-    // console.log(clickTimes);
-    // console.log(rounds);
-    // console.table(Products.all);
-    render();
   }
   if(clickTimes===rounds){
     // console.log('test');
@@ -106,12 +104,15 @@ function handleClick(event){
 }
 
 
+console.log(Products.all);
 button.addEventListener('click',renderTheResults);
 function renderTheResults(){
   let ul=document.getElementById('resultUl');
   for (let i = 0; i < imageNames.length; i++) {
-    console.log(`${Products.all[i].name} had ${Products.all[i].votes} Votes,and was seen ${Products.all[i].show} Times.`);
-    let litextContent=`${Products.all[i].name} had ${Products.all[i].votes} Votes,and was seen ${Products.all[i].show} Times.`;
+    // console.log(`${Products.all[i].name} had ${Products.all[i].votes} Votes, And was seen ${Products.all[i].show} Times.`);
+    let litextContent=`${Products.all[i].name} had ${Products.all[i].votes} Votes, And was seen ${Products.all[i].show} Times.`;
+    votes.push(Products.all[i].votes);
+    views.push(Products.all[i].show);
     let li=document.createElement('li');
     ul.appendChild(li);
     li.textContent=litextContent;
@@ -122,19 +123,36 @@ function renderTheResults(){
   let resultH1=document.createElement('h1');
   ul.appendChild(resultH1);
   resultH1.textContent=`Total Rounds : ${clickTimes}`;
+  button.removeEventListener('click',renderTheResults);
+  let canvasTag=document.getElementById('myChart');
+  canvasTag.style.display = 'block';
+  chartRender();
 
 }
+function chartRender() {
+  let ctx = document.getElementById('myChart').getContext('2d');
+  let chart = new Chart(ctx, {
+    // The type of chart we want to create
+    type: 'bar',
 
+    // The data for our dataset
+    data: {
+      labels: imageNames,
+      datasets: [{
+        label: 'Image votes',
+        backgroundColor: 'red',
+        borderColor: 'rgb(255, 99, 132)',
+        data: votes
+      },
+      {
+        label: 'Image views',
+        backgroundColor: 'green',
+        borderColor: 'rgb(255, 99, 132)',
+        data: views
+      }]
+    },
 
-
-
-
-
-
-// console.table(Products.all);
-// if(clickTimes<=rounds){
-//   console.log(clickTimes);
-//   console.log(rounds);
-//   console.table(Products.all);
-//   render();
-// }
+    // Configuration options go here
+    options: {}
+  });
+}
