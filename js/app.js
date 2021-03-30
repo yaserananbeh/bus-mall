@@ -29,6 +29,22 @@ function Products(name){
   Products.all.push(this);
 }
 Products.all=[];
+function settingItem() {
+  let data = JSON.stringify(Products.all);
+  // console.log(data);
+  localStorage.setItem('product', data);
+}
+function gettingItem() {
+  let stringObj = localStorage.getItem('product');
+  // console.log('from the local storage', stringObj);
+  let normalObj = JSON.parse(stringObj);
+  // console.log('after parsing', normalObj);
+  if (normalObj !== null) {
+
+    Products.all= normalObj;
+  }
+  renderTheResults();
+}
 
 for (let i = 0; i < imageNames.length; i++) {
   new Products(imageNames[i]);
@@ -97,15 +113,20 @@ function handleClick(event){
   }
   if(clickTimes===rounds){
     // console.log('test');
+    settingItem();
     imageContainer.removeEventListener;
     button.style.display = 'block';
+    // gettingItem();
   }
 
 }
 
 
 console.log(Products.all);
-button.addEventListener('click',renderTheResults);
+button.addEventListener('click',refreshPage);
+function refreshPage(){
+  location.reload();
+}
 function renderTheResults(){
   let ul=document.getElementById('resultUl');
   for (let i = 0; i < imageNames.length; i++) {
@@ -123,7 +144,7 @@ function renderTheResults(){
   let resultH1=document.createElement('h1');
   ul.appendChild(resultH1);
   resultH1.textContent=`Total Rounds : ${clickTimes}`;
-  button.removeEventListener('click',renderTheResults);
+  // button.removeEventListener('click',renderTheResults);
   let canvasTag=document.getElementById('myChart');
   canvasTag.style.display = 'block';
   chartRender();
@@ -156,3 +177,4 @@ function chartRender() {
     options: {}
   });
 }
+gettingItem();
